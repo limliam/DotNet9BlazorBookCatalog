@@ -1,0 +1,57 @@
+﻿@page "/books"
+@inject IBookRepository Repository
+@attribute [StreamRendering]
+
+<PageTitle>
+    Book List
+</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-6">
+        <h3>
+            Book List
+        </h3>
+        <br />
+
+        <a href="add-new" class="btn btn-primary shadow-none mb-3">
+            Add New
+        </a>
+        @if (books is null)
+        {
+            <div class="book-item">
+                Loading books. Please wait...
+            </div>
+        }
+        else if (books.Any())
+        {
+            @foreach (var book in books)
+            {
+                <div class="book-item">
+                    
+                    <BookCard @rendermode="InteractiveServer" Book="book" />
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="book-item">
+                No book found.
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Book>? books;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // delay to see if loading message shows. This works with
+        // @attribute [StreamRendering] on the top of the page
+        // This is not necesary so wew can remove this line as well as below testing delay
+        //await Task.Delay(1000);
+
+        books = await Repository.GetAllAsync();
+    }
+}
